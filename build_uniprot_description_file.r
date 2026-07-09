@@ -3,7 +3,7 @@
 # taxonomy_id / organism_id: 22663
 # ================================
 
-setwd("build_description_file_pom")
+setwd("C:/Users/YonatanY/Migal/Rachel Amir Team - General/yonatan/pom/build_description_file_pom")
 
 library(httr)
 library(readr)
@@ -125,7 +125,11 @@ uni2xp <- read.csv("uni.by.XP.csv") %>%
 
 refseq_pom <- read.csv("pomegranate_refseq_ids.csv")
 
-merged_ids <- merge(uni2xp, refseq_pom, by = "protein_id")
+gene_des <- read.csv("pomegranate_transcript_id_description.txt", sep = "\t")
+
+merged_ids <- merge(uni2xp, refseq_pom, by = "protein_id", all.y = TRUE) %>%
+    merge(., gene_des, by = "transcript_id", all.x = TRUE)
+
 
 uniprot_df_out <- merge(uniprot_df, merged_ids, by = "Entry", all.y = TRUE) %>%
     arrange(protein_id) %>%
@@ -138,12 +142,14 @@ uniprot_df_out <- merge(uniprot_df, merged_ids, by = "Entry", all.y = TRUE) %>%
     GO_biological_process = "Gene Ontology (biological process)",
     GO_cellular_component = "Gene Ontology (cellular component)",
     GO_molecular_function = "Gene Ontology (molecular function)",
-    Protein_families = "Protein families"
+    Protein_families = "Protein families",
+    Description = "description"
   ) %>%
   group_by(gene_id) %>%
   summarize(
     Symbol = gsub("LOC[0-9]+", "", first(Symbol)),
-    Protein_names = first(Protein_names),
+    Description = gsub(", transcript variant X[0-9]", "", first(Description)),
+    Protein_names = gsub(" isoform X[0-9]", "", first(Protein_names)),
     Protein_families = first(Protein_families),
     Function = gsub("FUNCTION: ", "", first(Function)),
     Pathway = gsub("PATHWAY: ", "", first(Pathway)),
@@ -165,7 +171,7 @@ write.csv(
 ########################################################################################################################
 
 ## GO IDs db
-GO_ids <- read.csv("../uniprot/uniprot-pomegranate.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE) %>%
+GO_ids <- read.csv("C:/Users/YonatanY/Migal/Rachel Amir Team - General/yonatan/pom/RNAseq_yonatan_2021/DESeq2/uniprot/uniprot-pomegranate.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE) %>%
     select(Entry, Gene.ontology.IDs) %>%
     rename("GO_ids" = Gene.ontology.IDs) %>%
     merge(., merged_ids, by = "Entry") %>%
