@@ -3,7 +3,7 @@
 # taxonomy_id / organism_id: 22663
 # ================================
 
-setwd("C:/Users/YonatanY/Migal/Rachel Amir Team - General/yonatan/pom/build_description_file_pom")
+setwd("build_description_file_pom")
 
 library(httr)
 library(readr)
@@ -165,7 +165,7 @@ write.csv(
 ########################################################################################################################
 
 ## GO IDs db
-GO_ids <- read.csv("C:/Users/YonatanY/Migal/Rachel Amir Team - General/yonatan/pom/RNAseq_yonatan_2021/DESeq2/uniprot/uniprot-pomegranate.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE) %>%
+GO_ids <- read.csv("../uniprot/uniprot-pomegranate.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE) %>%
     select(Entry, Gene.ontology.IDs) %>%
     rename("GO_ids" = Gene.ontology.IDs) %>%
     merge(., merged_ids, by = "Entry") %>%
